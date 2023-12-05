@@ -41,6 +41,10 @@
                 const savedDate = new Date(formattedDate);
                 const currentDate = new Date();
 
+                // 確認用
+                console.log("savedDate:", savedDate);
+                console.log("currentDate:", currentDate);
+
                 // アラート: 1日経過チェック
                 if (dateDifference(savedDate, currentDate) >= 1) {
                     alert("メモを書いた日から1日経過しました！");
@@ -65,11 +69,6 @@
             // テキストエリアをクリア
             $("#key").val('');
             $("#memo").val('');
-            // // アラート: 1日経過チェック
-            // const savedDate = new Date(formattedDate);
-            // if (dateDifference(currentDate, savedDate) >= 1) {
-            //     alert("メモを書いた日から1日経過しました！");
-            // }
         });
 
         // チェックボックス クリックイベント
