@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Canaco　todoリスト</title>
+    <script src="js/jquery-2.1.3.min.js"></script>
+    <link rel="stylesheet" href="css/sample.css">
+</head>
+
+<body>
+    <header>
+        <h1>canaco todoリスト</h1>
+    </header>
+    <main>
+        <input type="text" id="key" placeholder="見出し">
+        <textarea id="memo" placeholder="内容"></textarea>
+        <ul>
+            <li id="save">Save</li>
+            <li id="clear">Clear</li>
+
+        </ul>
+    </main>
+    <table id="list">
+        <!-- ここに追加データが挿入される -->
+    </table>
+    <script>
+        // 関数: 日時差を計算する
+        function dateDifference(date1, date2) {
+            const difference = date1.getTime() - date2.getTime();
+            return difference / (1000 * 60 * 60 * 24); // ミリ秒から日に変換
+        }
+
+        // ページ読み込み時に1日経過チェック
+        $(document).ready(function () {
+            // 保存されているデータを取得
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                const storedData = JSON.parse(localStorage.getItem(key));
+                const formattedDate = storedData.date;
+                const savedDate = new Date(formattedDate);
+                const currentDate = new Date();
+
+                // アラート: 1日経過チェック
+                if (dateDifference(savedDate, currentDate) >= 1) {
+                    alert("メモを書いた日から1日経過しました！");
+                }
+            }
+        });
+
+
+        //1.Save クリックイベント
+        $("#save").on("click", function () {
+            const key = $("#key").val();
+            const value = $("#memo").val();
+            // 現在の日時を取得
+            const currentDate = new Date();
+            const formattedDate = currentDate.toLocaleString();
+            // 保存データと日時を localStorage に保存
+            localStorage.setItem(key, JSON.stringify({ value, date: formattedDate, completed: false }));
+            const html = '<tr><td><input type="checkbox" class="completed-checkbox"> </td><th>' + key + '</th><td>' + value +
+                '</td><td>' + formattedDate +
+                '</td><td><button class="delete-btn"> 削除</button></td><td><button class="edit-btn">変更</button></td></tr>';
+            $("#list").append(html);
+            // テキストエリアをクリア
+            $("#key").val('');
+            $("#memo").val('');
+            // // アラート: 1日経過チェック
+            // const savedDate = new Date(formattedDate);
+            // if (dateDifference(currentDate, savedDate) >= 1) {
+            //     alert("メモを書いた日から1日経過しました！");
+            // }
+        });
+
+        // チェックボックス クリックイベント
+        $(document).on("change", ".completed-checkbox", function () {
+            const row = $(this).closest("tr");
+            if (!row) return; // 追加: 見つからない場合は処理を中断
+            const key = row.find("th").text();
+            const storedData = JSON.parse(localStorage.getItem(key));
+            const isCompleted = $(this).prop("checked");
+            storedData.completed = isCompleted;
+            localStorage.setItem(key, JSON.stringify(storedData));
+        });
+
+
+        //2.clear クリックイベント
+        $("#clear").on("click", function () {
+            localStorage.clear();
+            $("#list").empty();
+        });
+
+
+        //3.ページ読み込み：保存データ取得表示
+        for (let i = 0; i < localStorage.length; i++) {
+            const key = localStorage.key(i);
+            const storedData = JSON.parse(localStorage.getItem(key));
+            const value = storedData.value;
+            const formattedDate = storedData.date;
+            const isCompleted = storedData.completed;
+            // const completedClass = isCompleted ? "completed" : "not-completed";
+            // const checkbox = isCompleted ? '☑' : '○';
+            const html = '<tr><td><input type="checkbox" class="completed-checkbox"> </td><th>' + key + '</th><td>' + value +
+                '</td><td>' + formattedDate +
+                '</td><td><button class="delete-btn"> 削除</button></td><td><button class="edit-btn">変更</button></td></tr>';
+            $("#list").append(html);
+        };
+
+
+        // 4. 削除ボタン クリックイベント
+        $(document).on("click", ".delete-btn", function () {
+            const keyToDelete = $(this).closest("tr").find("th").text(); // 削除ボタンの行のキーを取得
+            localStorage.removeItem(keyToDelete); // LocalStorageから該当の行のデータを削除
+            $(this).closest("tr").remove(); // テーブルの行も削除
+
+        });
+
+
+        // 5. 変更ボタン クリックイベント
+        $(document).on("click", ".edit-btn", function () {
+            const keyToedit = $(this).closest("tr").find("th").text();//変更ボタンの行のキーを取得
+            const row = $(this).closest("tr");
+            if (!row) return; // 追加: 見つからない場合は処理を中断
+            const keyToEdit = row.find("th").text(); // 変更ボタンの行のキーを取得
+
+            // 編集用の入力フィールドを作成
+            const editedKeyInput = $('<input type="text" class="edited-key" value="' + keyToEdit + '">');
+            const editedValueInput = $('<input type="text" class="edited-value" value="' + row.find("td").eq(0).text() + '">');
+            const saveButton = $('<button class="save-edit-btn">保存</button>');
+
+            // 編集用のフィールドを行に差し替え
+            row.find("th").html(editedKeyInput);
+            row.find("td").eq(1).html(editedValueInput);
+            row.find("td").eq(4).html(saveButton);
+
+            // 保存ボタン クリックイベント
+            saveButton.on("click", function () {
+                const newKey = editedKeyInput.val();
+                const newValue = editedValueInput.val();
+                // const currentDate = new Date();
+                const storedData = JSON.parse(localStorage.getItem(keyToEdit));
+                const formattedDate = storedData.date;
+
+                // 変更後のデータを localStorage に保存
+                localStorage.setItem(newKey, JSON.stringify({ value: newValue, date: formattedDate, completed: storedData.completed }));
+
+                // 表示を更新
+                row.find("th").html(newKey);
+                row.find("td").eq(1).html(newValue);
+                row.find("td").eq(4).html('<button class="edit-btn">変更</button>');
+            });
+
+        });
+
+
+
+    </script>
+    <footer><small>G's</small></footer>
+</body>
+
+</html>

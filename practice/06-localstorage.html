@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>LocalStorage Demo</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+
+<body>
+    <button id="save">データを保存</button>
+    <button id="load">データを読み取り</button>
+    <button id="delete">特定のデータを削除</button>
+    <button id="clear">全データを削除</button>
+
+<script>
+// データを保存
+$('#save').click(function () {
+    // localStorage.setItem('キー', '値');
+    localStorage.setItem('user','Taro Yamada');
+    // userというキーにTaro Yamadaという値を保存
+    localStorage.setItem('age', 50);
+    // ageというキーに30という値を保存
+    
+    console.log('データを保存しました');
+});
+
+// データを読み取り
+$('#load').click(function () {
+    // localStorage.getItem('キー');
+    
+    // userというキーの値を取得
+    const user =localStorage.getItem("user");
+    console.log('ユーザー名: ' + user);
+
+    // ageというキーの値を取得
+    const age=localStorage.getItem('age');
+    console.log('年齢: ' + age);
+});
+
+// 特定のデータを削除
+$('#delete').click(function () {
+    localStorage.removeItem("age");
+    localStorage.removeItem('キー');
+
+    // ageというキーの値を削除
+
+    console.log('年齢データを削除しました');
+});
+
+// 全データを削除
+$('#clear').click(function () {
+    localStorage.clear();
+    
+    // 全データを削除
+
+    console.log('全データを削除しました');
+});
+</script>
+</body>
+
+</html>

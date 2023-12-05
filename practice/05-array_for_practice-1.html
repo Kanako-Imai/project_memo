@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+
+
+<script>
+/*-----------------------------------
+【想定ケース1: オンラインショップの割引価格計算】
+
+あなたはオンラインショップのウェブサイトで働いており、商品の価格を一律に20％割引するキャンペーンを行うことになりました。
+
+問題:
+1. 10個の商品があり、それぞれの価格が1,000円から10,000円（1,000円刻み）である配列を作成してください。
+  例: [1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000 ,10000]
+2. for文を使用して、各商品の価格を20%割引した価格を新しい配列に保存してください。
+3. 割引後の価格が入った新しい配列をコンソールに出力してください。
+-----------------------------------*/
+
+// 入力値 [1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000 ,9000 ,10000]
+let prices = [1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000 ,9000 ,10000];
+
+// ロジックの記述: for文を使用して、各商品の価格を20%割引した価格を新しい配列に保存してください
+// let disountPrice = []
+// for(let i =0; i<prices.length; i++){    
+//   let disountPrice=price*0.8;
+//   consle.log(prices[i]);
+//   discountedPrices.push(discountedPrice);
+// }
+
+
+let discountedPrices = [];
+
+// 通常のforループを使用して各商品の価格を計算
+for (let i = 0; i < prices.length; i++) {
+    discountedPrices.push(prices[i] * 0.8);
+}
+
+console.log(discountedPrices);
+
+
+
+// for (let i = 0; i < originalPrices.length; i++) {
+//   const originalPrice = originalPrices[i];
+//   const discountedPrice = originalPrice * 0.8; // 20%割引
+//   discountedPrices.push(discountedPrice);
+// }
+
+
+
+console.log()
+// 出力値 [800, 1600, 2400, 3200, 4000, 4800, 5600, 6400 ,7200 ,8000]
+
+
+
+
+
+</script>
+
+</body>
+</html>
