@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Canaco　kanban-board</title>
+    <link rel="stylesheet" href="css/jkanban.min.css">
+    <script src="js/jkanban.min.js"></script>
+
+</head>
+
+<body>
+    <div id="show-message">&nbsp;</div>
+    <div id="kanban-canvas"></div>
+    <div class="kanban-board"></div>
+    <div class="kanban-item">
+        <label for="assignee">担当者:</label>
+        <input type="text" id="assignee" placeholder="未設定">
+        <label for="dueDate">期日:</label>
+        <input type="text" id="dueDate" placeholder="未設定">
+    </div>
+
+    <script>
+        const dataContent = [
+            {
+                "id": "column-id-1",
+                "title": "カラム (1)",
+                "class": "red",
+                "item": [
+                    {
+                        "id": "item-id-1",
+                        "title": "カード 1",
+                        "username": "",
+                        "assignee": "",
+                        "dueDate": ""
+                    },
+                    {
+                        "id": "item-id-2",
+                        "title": "カード 2",
+                        "assignee": "",
+                        "dueDate": ""
+                    }
+                ]
+            },
+            {
+                "id": "column-id-2",
+                "title": "カラム (2)",
+                "class": "blue",
+                "item": [
+                    {
+                        "id": "item-id-3",
+                        "title": "カード 3",
+                        "assignee": "",
+                        "dueDate": ""
+                    }
+                ]
+            },
+            {
+                "id": "column-id-3",
+                "title": "カラム (3)",
+                "class": "green",
+                "item": [
+                    {
+                        "id": "item-id-4",
+                        "title": "カード 4",
+                        "assignee": "",
+                        "dueDate": ""
+                    },
+                    {
+                        "id": "item-id-5",
+                        "title": "カード 5",
+                        "assignee": "",
+                        "dueDate": ""
+                    }
+                ]
+            }
+        ];
+
+        let taskid = 0;
+
+        const kanban = new jKanban({
+            element: '#kanban-canvas',
+            boards: dataContent,
+            gutter: '16px',
+            widthBoard: '250px',
+            responsivePercentage: true,
+            dragItems: true,
+            dragBoards: true,
+            addItemButton: true,
+            buttonClick: (element, id) => addFormElement(id),
+            click: function (el) {
+                onKanbanItemClicked(el);
+            },
+            dropEl: function (el, target, source, sibling) {
+                onKanbanItemDropped(el, target, source, sibling);
+            },
+            buttonClick: (element, id) => addTask(id),
+            click: function (el) {
+                onKanbanItemDeleted(el);
+            },
+            itemAddOptions: {
+                enabled: true,
+                content: '追加'
+            },
+        });
+
+        function renderItem(item) {
+            return `
+        <div class="kanban-item-title">${item.title}</div>
+        <div class="kanban-item-details">
+          <div class="kanban-item-assignee">担当者: ${item.assignee || "未設定"}</div>
+          <div class="kanban-item-due-date">期日: ${item.dueDate || "未設定"}</div>
+        </div>
+      `;
+        };
+
+        function addFormElement(id) {
+            const formItem = document.createElement('form');
+            formItem.innerHTML = `
+        <input type="text" placeholder="タイトル">
+        <label for="assignee">担当者:</label>
+        <input type="text" id="assignee" placeholder="未設定">
+        <label for="dueDate">期日:</label>
+        <input type="text" id="dueDate" placeholder="未設定">
+      `;
+            kanban.addForm(id, formItem);
+            formItem.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const title = e.target[0].value;
+                const assignee = e.target[1].value || "";
+                const dueDate = e.target[2].value || "";
+                kanban.addElement(id, { "title": title, "assignee": assignee, "dueDate": dueDate });
+                formItem.parentNode.removeChild(formItem);
+            });
+        }
+
+        function onKanbanItemClicked(el) {
+            showMessage('カード「' + el.innerText + '」が左クリックされました。');
+            const itemId = el.dataset.eid; // カードのIDを取得
+            const cardData = kanban.findElement(itemId).dataset; // カードのデータを取得
+
+            // ダイアログを表示して担当者名と期日を編集
+            const assignee = prompt('担当者名を入力してください', cardData.assignee);
+            const duedate = prompt('期日を入力してください', cardData.duedate);
+
+            // 編集がキャンセルされなかった場合、カードのデータを更新
+            if (assignee !== null && duedate !== null) {
+                kanban.updateElement(itemId, {
+                    assignee: assignee,
+                    duedate: duedate
+                });
+
+                // 更新後のメッセージを表示
+                showMessage(`カード「${el.innerText}」の担当者: ${assignee} 期日: ${duedate} に更新されました。`);
+            } else {
+                showMessage('編集がキャンセルされました。');
+            }
+        }
+
+
+
+
+
+        function onKanbanItemDropped(el, target, source, sibling) {
+            const sourceTitle = source.parentNode.querySelector('header').innerText;
+            const sourceId = source.parentNode.dataset.id;
+            const targetTitle = target.parentNode.querySelector('header').innerText;
+            const targetId = target.parentNode.dataset.id;
+
+            const sameColumn = (sourceId === targetId) ? true : false;
+
+            const alertMsg = (sameColumn) ?
+                'カード「' + el.innerText + '」が、カラム『' + sourceTitle + '』内で移動しました。' :
+                'カード「' + el.innerText + '」が、カラム『' + sourceTitle + '』からカラム『' + targetTitle + '』へ移動しました。';
+
+            showMessage(alertMsg);
+
+            if (!sameColumn && targetTitle === '完了') {
+                setKanbanItemStatus(el, 'done');
+            } else if (!sameColumn && targetTitle !== '完了') {
+                setKanbanItemStatus(el, 'todo');
+            }
+        }
+
+        function setKanbanItemStatus(el, status) {
+            if (status === 'done') {
+                el.classList.remove('todo');
+                el.classList.add('done');
+            } else {
+                el.classList.remove('done');
+                el.classList.add('todo');
+            }
+        }
+
+        function showMessage(msg) {
+            document.getElementById('show-message').innerHTML = msg;
+        }
+
+        document.querySelectorAll('.kanban-item').forEach(item => {
+            if (item.dataset.class) {
+                item.classList.add(item.dataset.class);
+            }
+        });
+
+
+        function onKanbanItemDeleted(el) {
+            const itemId = el.dataset.eid; // カードのIDを取得
+            const confirmDelete = confirm('このカードを削除しますか？');
+
+            if (confirmDelete) {
+                kanban.removeElement(itemId); // カードを削除
+                showMessage('カード「' + el.innerText + '」が削除されました。');
+            } else {
+                showMessage('カードの削除がキャンセルされました。');
+            }
+        }
+
+
+    </script>
+
+</body>
+
+</html>

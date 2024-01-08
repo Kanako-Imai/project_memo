@@ -1,0 +1,145 @@
+body {
+    font-family: Arial, sans-serif;
+}
+
+/*リンク欄*/
+ul.topnav {
+    overflow: hidden;
+    margin: 0;
+    padding: 0;
+    list-style-type: none;
+    background-color: #1b2538;
+}
+
+ul.topnav li {
+    float: left;
+}
+
+ul.topnav li a {
+    display: block;
+    padding: 14px 16px;
+    text-align: center;
+    text-decoration: none;
+    color: white;
+}
+
+ul.topnav li a:hover:not(.active) {
+    background-color: #a9bce2;
+}
+
+ul.topnav li a.active {
+    background-color: #da3c41;
+}
+
+ul.topnav li.right {
+    float: right;
+}
+
+@media screen and (max-width: 480px) {
+
+    ul.topnav li.right,
+    ul.topnav li {
+        float: none;
+    }
+}
+
+
+
+.title {
+    padding: 4px 0;
+    border-top: 3px double #2196F3;
+    border-bottom: 3px double #2196F3;
+    text-align: center;
+    color: #1565C0;
+}
+
+#kanban-canvas {
+    display: flex;
+    overflow-x: auto;
+    /* カンバン全体が横に広がる場合に横スクロールを有効にする */
+}
+
+.kanban-column {
+    margin: 0 15px;
+    flex: 1;
+    background-color: #f5f5f5;
+    border-radius: 5px;
+    overflow-y: auto;
+    /* カラム内で要素がはみ出る場合に縦スクロールを有効にする */
+    max-height: 600px;
+    /* カラムの高さが一定以上になったら縦スクロールが有効になるように調整 */
+}
+
+.kanban-item {
+    background-color: #fff;
+    border: 1px solid #ddd;
+    margin-bottom: 10px;
+    padding: 10px;
+    position: relative;
+}
+
+.kanban-item .details {
+    margin-top: 10px;
+    font-size: 12px;
+    color: #888;
+    display: block;
+    /* 詳細部分を常に表示 */
+}
+
+.kanban-item .edit-button {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    color: #007bff;
+    cursor: pointer;
+}
+
+/* モーダルのスタイル */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-content {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 5px;
+}
+
+.modal input {
+    width: 100%;
+    margin-bottom: 10px;
+}
+
+
+
+
+.complete-button {
+    display: block;
+    width: 60px;
+    padding: 0.8em;
+    text-align: center;
+    text-decoration: none;
+    color: #EC407A;
+    border: 2px solid #EC407A;
+    border-radius: 3px;
+    transition: .4s;
+}
+
+.complete-button:hover {
+    background: #EC407A;
+    color: #fff;
+}
+
+/* 完了したカードのスタイル */
+.kanban-item.complete {
+    background-color: #323131;
+    /* グレーに変更 */
+}

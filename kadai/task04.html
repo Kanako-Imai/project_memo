@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kanban Board04</title>
+    <script src="js/jquery-2.1.3.min.js"></script>
+    <link rel="stylesheet" href="css/task04.css">
+   
+</head>
+
+<body>
+    <!--リンク欄-->
+    <ul class="topnav">
+        <li><a class="active" href="#home">Home</a></li>
+        <li><a href="./qa01.html">教えてcanacoちゃん</a></li>
+        <li><a href="./diagnose.html">限度要否判定ツール</a></li> 
+    </ul>
+
+    <h1 class="title">canacoチェックリスト</h1>
+
+    <!--カンバンボード-->
+    <div id="kanban-canvas" class="kanban-board">
+        <!-- カラム1 -->
+        <div class="kanban-column" id="column-id-1">
+            <h2>カラム (1)</h2>
+            <!-- カードの詳細表示機能を削除 -->
+            <div class="kanban-item">
+                カード１
+                <!-- 完了ボタン -->
+                <span class="complete-button" onclick="completeCard('${columnId}', '${cardIndex}')">✔</span>
+
+                <!-- 詳細部分 -->
+                <div class="details">
+                    <input type="text" id="assignee-column-id-1-0" value="担当者1" readonly>
+                    <input type="text" id="duedate-column-id-1-0" value="2023-12-31" readonly>
+                    <input type="text" id="key-column-id-1-0" value="キー1" readonly>
+                    <textarea id="memo-column-id-1-0" readonly>メモ1</textarea>
+                </div>
+                <!-- 編集ボタン -->
+                <span class="edit-button"
+                    onclick="openEditModal('カード 1', '担当者1', '2023-12-31', 'キー1', 'メモ1', 'column-id-1', 0)">✎</span>
+            </div>
+            <!-- 他のカード... -->
+            <button onclick="openAddModal('column-id-1')">+ カードを追加</button>
+        </div>
+
+        <!-- カラム2 -->
+        <div class="kanban-column" id="column-id-2">
+            <h2>カラム (2)</h2>
+            <!-- カードの詳細表示機能を削除 -->
+            <div class="kanban-item">
+                カード 2
+                <!-- 完了ボタン -->
+                <span class="complete-button" onclick="completeCard('${columnId}', '${cardIndex}')">✔</span>
+                <!-- 詳細部分 -->
+                <div class="details">
+                    <input type="text" id="assignee-column-id-2-0" value="担当者2" readonly>
+                    <input type="text" id="duedate-column-id-2-0" value="2024-01-15" readonly>
+                    <input type="text" id="key-column-id-2-0" value="キー3" readonly>
+                    <textarea id="memo-column-id-2-0" readonly>メモ3</textarea>
+                </div>
+                <!-- 編集ボタン -->
+                <span class="edit-button"
+                    onclick="openEditModal('カード 3', '担当者2', '2024-01-15', 'キー3', 'メモ3', 'column-id-2', 0)">✎</span>
+            </div>
+            <!-- 他のカード... -->
+            <button onclick="openAddModal('column-id-2')">+ カードを追加</button>
+        </div>
+
+        <!-- カラム3 -->
+        <div class="kanban-column" id="column-id-3">
+            <h2>カラム (3)</h2>
+            <!-- カードの詳細表示機能を削除 -->
+            <div class="kanban-item">
+                カード 4
+                <!-- 完了ボタン -->
+                <span class="complete-button" onclick="completeCard('${columnId}', '${cardIndex}')">✔</span>
+                <!-- 詳細部分 -->
+                <div class="details">
+                    <input type="text" id="assignee-column-id-3-0" value="担当者3" readonly>
+                    <input type="text" id="duedate-column-id-3-0" value="2024-02-01" readonly>
+                    <input type="text" id="key-column-id-3-0" value="キー4" readonly>
+                    <textarea id="memo-column-id-3-0" readonly>メモ4</textarea>
+                </div>
+                <!-- 編集ボタン -->
+                <span class="edit-button"
+                    onclick="openEditModal('カード 4', '担当者3', '2024-02-01', 'キー4', 'メモ4', 'column-id-3', 0)">✎</span>
+            </div>
+            <!-- 他のカード... -->
+            <button onclick="openAddModal('column-id-3')">+ カードを追加</button>
+        </div>
+
+        <!-- カラム4 -->
+        <div class="kanban-column" id="column-id-4">
+            <h2>カラム (4)</h2>
+            <!-- カードの詳細表示機能を削除 -->
+            <div class="kanban-item">
+                カード 5
+                <!-- 完了ボタン -->
+                <span class="complete-button" onclick="completeCard('${columnId}', '${cardIndex}')">✔</span>
+                <!-- 詳細部分 -->
+                <div class="details">
+                    <input type="text" id="assignee-column-id-4-0" value="担当者4" readonly>
+                    <input type="text" id="duedate-column-id-4-0" value="2024-02-01" readonly>
+                    <input type="text" id="key-column-id-4-0" value="キー5" readonly>
+                    <textarea id="memo-column-id-4-0" readonly>メモ5</textarea>
+                </div>
+                <!-- 編集ボタン -->
+                <span class="edit-button"
+                    onclick="openEditModal('カード 5', '担当者4', '2024-02-01', 'キー5', 'メモ5', 'column-id-4', 0)">✎</span>
+            </div>
+            <!-- 他のカード... -->
+            <button onclick="openAddModal('column-id-4')">+ カードを追加</button>
+        </div>
+    </div>
+
+    <!-- モーダル（編集用） -->
+    <div id="editModal" class="modal">
+        <div class="modal-content">
+            <h2 id="editModalTitle"></h2>
+            <input type="text" id="editAssignee" placeholder="担当者名">
+            <input type="text" id="editDueDate" placeholder="期日（YYYY-MM-DD）">
+            <input type="text" id="editKey" placeholder="見出し">
+            <textarea id="editMemo" placeholder="内容"></textarea>
+            <button onclick="saveEdit()">保存</button>
+            <button onclick="closeModal()">キャンセル</button>
+        </div>
+    </div>
+
+    <!-- モーダル（追加用） -->
+    <div id="addModal" class="modal">
+        <div class="modal-content">
+            <h2 id="addModalTitle"></h2>
+            <input type="text" id="addTitle" placeholder="カードのタイトル">
+            <input type="text" id="addAssignee" placeholder="担当者名">
+            <input type="text" id="addDueDate" placeholder="期日（YYYY-MM-DD）">
+            <input type="text" id="addKey" placeholder="見出し">
+            <textarea id="addMemo" placeholder="内容"></textarea>
+            <button onclick="saveAdd()">追加</button>
+            <button onclick="closeModal()">キャンセル</button>
+        </div>
+    </div>
+
+    <script>
+        const initialData = {
+            'column-id-1': {
+                title: '見積提出前',
+                cards: [
+                    { title: '客先信用調査', assignee: '担当者1', duedate: '2023-12-31', key: 'キー1', memo: 'メモ1' }
+                ]
+            },
+            'column-id-2': {
+                title: '契約前',
+                cards: [
+                    { title: '案件ファイル作成', assignee: '担当者2', duedate: '2024-01-15', key: 'キー2', memo: 'メモ2' }
+                ]
+            },
+            'column-id-3': {
+                title: '出荷前',
+                cards: [
+                    { title: 'EL要否確認', assignee: '担当者3', duedate: '2024-01-15', key: 'キー3', memo: 'メモ3' }
+                ]
+            },
+            'column-id-4': {
+                title: '出荷後',
+                cards: [
+                    { title: '入庫証明書入手', assignee: '担当者4', duedate: '2024-01-15', key: 'キー4', memo: 'メモ4' }
+                ]
+            },
+        };
+        const kanbanData = JSON.parse(localStorage.getItem('kanbanData')) || initialData;
+        const completionData = JSON.parse(localStorage.getItem('completionData')) || {};
+
+
+        function renderKanban() {
+            console.log("Rendering Kanban with data:", kanbanData);
+            const kanbanCanvas = document.getElementById('kanban-canvas');
+            kanbanCanvas.innerHTML = '';
+
+            Object.keys(kanbanData).forEach(columnId => {
+                const column = document.createElement('div');
+                column.className = 'kanban-column';
+
+                const h2Element = document.createElement('h2');
+                h2Element.textContent = kanbanData[columnId].title;
+                column.appendChild(h2Element);
+
+                kanbanData[columnId].cards.forEach((card, cardIndex) => {
+                    const cardElement = createCardElement(card, columnId, cardIndex);
+                    column.appendChild(cardElement);
+                });
+
+                const addButton = document.createElement('button');
+                addButton.textContent = '+ カードを追加';
+                addButton.onclick = () => openAddModal(columnId);
+                column.appendChild(addButton);
+
+                kanbanCanvas.appendChild(column);
+            });
+        }
+
+        renderKanban();
+
+        function createCardElement(card, columnId, cardIndex) {
+            const cardElement = document.createElement('div');
+            cardElement.id = `kanban-item-${columnId}-${cardIndex}`;
+            cardElement.className = 'kanban-item';
+            cardElement.innerHTML = `${card.title}
+                    <span class="complete-button" onclick="completeCard('${columnId}', '${cardIndex}')">✔</span>
+                    <div class="details">
+                        <input type="text" id="assignee-${columnId}-${cardIndex}" value="${card.assignee}" readonly>
+                        <input type="text" id="duedate-${columnId}-${cardIndex}" value="${card.duedate}" readonly>
+                        <input type="text" id="key-${columnId}-${cardIndex}" value="${card.key}" readonly>
+                        <textarea id="memo-${columnId}-${cardIndex}" readonly>${card.memo}</textarea>
+                    </div>
+                    <span class="edit-button" onclick="openEditModal('${card.title}', '${card.assignee}', '${card.duedate}', '${card.key}', '${card.memo}', '${columnId}', ${cardIndex})">✎</span>`;
+            return cardElement;
+        }
+
+        //完了ボタンがクリックされたときの処理
+        function completeCard(columnId, cardIndex) {
+            const cardElement = document.getElementById(`kanban-item-${columnId}-${cardIndex}`);
+            if (cardElement) {
+                // complete クラスを追加し、背景色を変更
+                cardElement.classList.add('complete');
+                saveCompletionToLocalStorage(columnId, cardIndex);
+            }
+            // 完了ボタンがクリックされたときの追加処理を追加
+            console.log(`Card in ${columnId} at index ${cardIndex} completed.`);
+        }
+
+
+        function saveCompletionToLocalStorage(columnId, cardIndex) {
+            const completionData = JSON.parse(localStorage.getItem('completionData')) || {};
+
+            completionData[columnId] = completionData[columnId] || [];
+            completionData[columnId][cardIndex] = true;
+
+            localStorage.setItem('completionData', JSON.stringify(completionData));
+        }
+
+        function restoreCompletionFromLocalStorage() {
+            const completionData = JSON.parse(localStorage.getItem('completionData')) || {};
+
+            Object.keys(completionData).forEach(columnId => {
+                completionData[columnId].forEach((isCompleted, cardIndex) => {
+                    if (isCompleted) {
+                        const cardElement = document.getElementById(`kanban-item-${columnId}-${cardIndex}`);
+                        if (cardElement) {
+                            cardElement.classList.add('complete');
+                        } else {
+                            console.error(`${columnId}-${cardIndex}のカード要素が見つかりませんでした。`);
+                        }
+                    }
+                });
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            renderKanban();
+            restoreCompletionFromLocalStorage();
+        });
+
+
+        function openEditModal(title, assignee, duedate, key, memo, columnId, cardIndex) {
+            const editAssigneeInput = document.getElementById('editAssignee');
+            const editDueDateInput = document.getElementById('editDueDate');
+            const editKeyInput = document.getElementById('editKey');
+            const editMemoTextarea = document.getElementById('editMemo');
+
+            if (editAssigneeInput && editDueDateInput && editKeyInput && editMemoTextarea) {
+                editAssigneeInput.value = assignee;
+                editDueDateInput.value = duedate;
+                editKeyInput.value = key != null ? key : '';
+                editMemoTextarea.value = memo != null ? memo : '';
+                document.getElementById('editModal').style.display = 'flex';
+
+                // モーダルを表示させる処理を追加
+                $('#editModal').show();
+
+            } else {
+                console.error('Edit modal inputs not found.');
+            }
+
+            editModalData = { columnId, cardIndex };
+        }
+
+        function openAddModal(columnId) {
+            const newCard = { title: '', assignee: '', duedate: '', key: '', memo: '' };
+            document.getElementById('addTitle').value = newCard.title; 
+            document.getElementById('addAssignee').value = newCard.assignee;
+            document.getElementById('addDueDate').value = newCard.duedate;
+            document.getElementById('addKey').value = newCard.key;
+            document.getElementById('addMemo').value = newCard.memo;
+            document.getElementById('addModalTitle').innerText = `新しいカードを ${columnId} に追加`;
+            document.getElementById('addModal').style.display = 'flex';
+            const addAssigneeInput = document.getElementById('addAssignee');
+            const addDueDateInput = document.getElementById('addDueDate');
+            const addTitleInput = document.getElementById('addTitle'); 
+            addAssigneeInput.style.display = 'block';
+            addDueDateInput.style.display = 'block';
+            addTitleInput.style.display = 'block';
+            addModalData = { columnId };
+        }
+
+        function saveEdit() {
+            const assignee = document.getElementById('editAssignee').value;
+            const duedate = document.getElementById('editDueDate').value;
+            const key = document.getElementById('editKey').value;
+            const memo = document.getElementById('editMemo').value;
+
+            // カラムの配列が存在するか確認
+            if (kanbanData[editModalData.columnId] && Array.isArray(kanbanData[editModalData.columnId].cards)) {
+                // カードの配列にアクセスして、特定のカードを変更
+                const card = kanbanData[editModalData.columnId].cards[editModalData.cardIndex];
+
+                if (card) {
+                    card.assignee = assignee;
+                    card.duedate = duedate;
+                    card.key = key;
+                    card.memo = memo;
+
+                    saveToLocalStorage();
+                    renderKanban();
+                    closeModal();
+                } else {
+                    console.error(`インデックス ${editModalData.cardIndex} のカードが見つかりませんでした。`);
+                }
+            } else {
+                console.error(`ID が ${editModalData.columnId} のカラムが見つからないか、カードの配列が初期化されていません。`);
+            }
+        }
+
+        function saveAdd() {
+            const title = document.getElementById('addTitle').value;
+            const assignee = document.getElementById('addAssignee').value;
+            const duedate = document.getElementById('addDueDate').value;
+            const key = document.getElementById('addKey').value; // 追加
+            const memo = document.getElementById('addMemo').value; // 追加
+
+            console.log('title:', title)
+            console.log('Assignee:', assignee);
+            console.log('Due Date:', duedate);
+            console.log('Key:', key); // 追加
+            console.log('Memo:', memo); // 追加
+            // 新しいカードの初期値を設定
+            const newCard = {
+                title: title,
+                assignee: assignee,
+                duedate: duedate,
+                key: key,
+                memo: memo
+            };
+
+            // カラムのデータが配列であることを確認し、初期化する
+            if (!kanbanData[addModalData.columnId] || !Array.isArray(kanbanData[addModalData.columnId].cards)) {
+                kanbanData[addModalData.columnId] = { title: '', cards: [] };
+            }
+
+            // 配列に新しいカードを追加
+            kanbanData[addModalData.columnId].cards.push(newCard);
+
+            saveToLocalStorage();
+            renderKanban();
+            closeModal();
+        }
+
+
+
+        function closeModal() {
+            document.getElementById('editModal').style.display = 'none';
+            document.getElementById('addModal').style.display = 'none';
+        }
+
+
+        function saveToLocalStorage() {
+            console.log("Saving to localStorage:", kanbanData);
+            localStorage.setItem('kanbanData', JSON.stringify(kanbanData));
+        }
+
+
+        let editModalData = {};
+        let addModalData = {};
+
+// 期限切れのカードを確認してアラート
+function checkOverdueCards() {
+    const currentDate = new Date();
+    Object.keys(kanbanData).forEach(columnId => {
+        kanbanData[columnId].cards.forEach((card, cardIndex) => {
+            const dueDate = new Date(card.duedate);
+            if (dueDate < currentDate && !isCardCompleted(columnId, cardIndex)) {
+                alert(`カラム "${kanbanData[columnId].title}" のカード "${card.title}" は期限切れです！`);
+            }
+        });
+    });
+}
+
+// カードが完了したかどうかを確認する関数
+function isCardCompleted(columnId, cardIndex) {
+    const completionData = JSON.parse(localStorage.getItem('completionData')) || {};
+    return completionData[columnId] && completionData[columnId][cardIndex];
+}
+
+// 期限切れのカードを確認する関数を呼び出す
+checkOverdueCards();
+
+
+
+
+
+
+    </script>
+</body>
+
+</html>

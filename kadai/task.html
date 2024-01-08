@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <title>Canaco　kanban-board</title>
+  <link rel="stylesheet" href="css/jkanban.min.css">
+  <script src="js/jkanban.min.js"></script>
+
+  <!-- <script src="js/jquery-2.1.3.min.js"></script>
+    <link rel="stylesheet" href="css/task.css"> -->
+</head>
+
+<body>
+  <!-- ここにメッセージが表示される -->
+  <div id="show-message">&nbsp;</div>
+  <!-- ここにカンバンが表示される -->
+  <div id="kanban-canvas"></div>
+
+
+
+
+  <script>
+    const dataContent = [
+      {
+        "id": "column-id-1",
+        "title": "カラム (1)",
+        "class": "red",
+        "item": [
+          {
+            "id": "item-id-1",
+            "title": "カード 1",
+            "assignee": "担当者1",
+            "dueDate": "2023-12-31"
+          },
+          {
+            "id": "item-id-2",
+            "title": "カード 2"
+          }
+        ]
+      },
+      {
+        "id": "column-id-2",
+        "title": "カラム (2)",
+        "class": "blue",
+        "item": [
+          {
+            "id": "item-id-3",
+            "title": "カード 3"
+          }
+        ]
+      },
+      {
+        "id": "column-id-3",
+        "title": "カラム (3)",
+        "class": "green",
+        "item": [
+          {
+            "id": "item-id-4",
+            "title": "カード 4"
+          },
+          {
+            "id": "item-id-5",
+            "title": "カード 5"
+          }
+        ]
+      }
+    ];
+    let taskid = 0;
+
+    const kanban = new jKanban({
+      element: '#kanban-canvas',
+      boards: dataContent,
+      gutter: '16px',
+      widthBoard: '250px',
+      responsivePercentage: true,
+      dragItems: true,
+      dragBoards: true,
+      addItemButton: true,
+
+
+      buttonClick: (element, id) => addFormElement(id),
+
+      click: function (el) {
+        onKanbanItemClicked(el);
+      },
+      dragEl: function (el, source) {
+        // カードのドラッグが始まった時に実行
+      },
+      dragendEl: function (el) {
+        // カードがドラッグが終わった時に実行
+      },
+      dropEl: function (el, target, source, sibling) {
+        onKanbanItemDropped(el, target, source, sibling);
+      },
+      dragBoard: function (el, source) {
+        // カラムのドラッグを開始した時に実行
+      },
+      dragendBoard: function (el) {
+        // カラムのドラッグが終わった時に実行
+      },
+      buttonClick: function (el, boardId) {
+        // ボタンがクリックされた時に実行
+      },
+      itemAddOptions: {
+        enabled: true,
+        content: '追加',
+      },
+      buttonClick: (element, id) => addTask(id),
+      click: function (el) {
+        onKanbanItemDeleted(el);
+      },
+    });
+
+    function addTask(id) {
+      const task = document.createElement('input');
+      kanban.addForm(id, task);
+      el.classList.add('kanban-item');
+      task.addEventlistener('blur', e => {
+        kanban.addElement(id, { id: 'item-${taskid++}', title: e.target.value });
+        task.remove();
+      });
+    }
+
+
+    // // column-id-1 にプラスボタンを追加
+    // const addButton = document.createElement('div');
+    // addButton.className = 'kanban-title-button';
+    // addButton.innerHTML = '+';
+    // addButton.onclick = () => addFormElement('column-id-1');
+    // kanban.findBoard('column-id-1').querySelector('.kanban-title').appendChild(addButton);
+
+
+
+    function addFormElement(id) {
+      const formItem = document.createElement('form');
+      formItem.innerHTML = '<input type="text">'; // taskを追加するための入力ボックスを作成
+      kanban.addForm(id, formItem); // 入力ボックスをボードに追加
+      formItem.addEventListener('submit', (e) => {
+        e.preventDefault();
+        kanban.addElement(id, { "title": e.target[0].value });
+        formItem.parentNode.removeChild(formItem);
+      });
+    }
+
+    function onKanbanItemClicked(el) {
+      showMessage('カード「' + el.innerText + '」が左クリックされました。');
+    }
+
+    function onKanbanItemDropped(el, target, source, sibling) {
+      const sourceTitle = source.parentNode.querySelector('header').innerText;
+      const sourceId = source.parentNode.dataset.id;
+      const targetTitle = target.parentNode.querySelector('header').innerText;
+      const targetId = target.parentNode.dataset.id;
+
+      const sameColumn = (sourceId === targetId) ? true : false;
+
+      const alertMsg = (sameColumn) ?
+        'カード「' + el.innerText + '」が、カラム『' + sourceTitle + '』内で移動しました。' :
+        'カード「' + el.innerText + '」が、カラム『' + sourceTitle + '』からカラム『' + targetTitle + '』へ移動しました。';
+
+      showMessage(alertMsg);
+
+      if (!sameColumn && targetTitle === '完了') {
+        setKanbanItemStatus(el, 'done');
+      } else if (!sameColumn && targetTitle !== '完了') {
+        setKanbanItemStatus(el, 'todo');
+      }
+    }
+
+    function setKanbanItemStatus(el, status) {
+      if (status === 'done') {
+        el.classList.remove('todo');
+        el.classList.add('done');
+      } else {
+        el.classList.remove('done');
+        el.classList.add('todo');
+      }
+    }
+
+    function showMessage(msg) {
+      document.getElementById('show-message').innerHTML = msg;
+    }
+
+    document.querySelectorAll('.kanban-item').forEach(item => {
+      if (item.dataset.class) {
+        item.classList.add(item.dataset.class);
+      }
+    });
+  </script>
+
+</body>
+
+</html>
